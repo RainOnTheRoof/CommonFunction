@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+/// <summary>
+///通用摄像机视角控制器
+///通过鼠标移动实现摄像机在指定范围内的位移与视角缩放
+/// </summary>
+public class ViewController : MonoBehaviour
+{
+    public float SPEED = 50;//视角移动速度
+
+    private float h = 0;//左右控制变量
+    private float v = 0;//上下控制变量
+    //指定摄像机的限制范围
+    private float RIGHT_LIMIT = 45;
+    private float LEFT_LIMIT = 10;
+    private float UP_LIMIT = 20;
+    private float DOWN_LIMIT = -5;
+
+    private float BORADER_RANGE = 20;//鼠标移动到边界触发摄像机移动的范围
+
+    private void OnGUI()
+    {
+        //当鼠标移动到指定范围时，调整控制变量
+        if (Event.current.mousePosition.x > UnityEngine.Screen.width - BORADER_RANGE)
+            h = 1;//x轴正方向
+        else if (Event.current.mousePosition.x < BORADER_RANGE)
+            h = -1;//x轴反方向
+        else
+            h = 0;
+
+        if (Event.current.mousePosition.y > UnityEngine.Screen.height - BORADER_RANGE)
+            v = -1;
+        else if (Event.current.mousePosition.y < BORADER_RANGE)
+            v = 1;
+        else
+            v = 0;
+    }
+    public void Update()
+    {
+        
+        float s = Input.GetAxis("Mouse ScrollWheel");//缩放控制变量
+        //左右控制
+        if (transform.position.x < RIGHT_LIMIT && transform.position.x > LEFT_LIMIT)
+            transform.Translate(new Vector3(h, 0, 0) * Time.deltaTime * SPEED * 1, Space.World);
+        else if (transform.position.x >= RIGHT_LIMIT && h <= 0)
+            transform.Translate(new Vector3(h, 0, 0) * Time.deltaTime * SPEED * 1, Space.World);
+        else if (transform.position.x <= LEFT_LIMIT && h >= 0)
+            transform.Translate(new Vector3(h, 0, 0) * Time.deltaTime * SPEED * 1, Space.World);
+        //上下控制
+        if (transform.position.z < UP_LIMIT && transform.position.z > DOWN_LIMIT)
+            transform.Translate(new Vector3(0, 0, v) * Time.deltaTime * SPEED * 1, Space.World);
+        else if (transform.position.z <= UP_LIMIT && v >= 0)
+            transform.Translate(new Vector3(0, 0, v) * Time.deltaTime * SPEED * 1, Space.World);
+        else if (transform.position.z >= DOWN_LIMIT && v <= 0)
+            transform.Translate(new Vector3(0, 0, v) * Time.deltaTime * SPEED * 1, Space.World);
+        //缩放控制
+        if (transform.position.y < 60 && transform.position.y > 15)
+            transform.Translate(new Vector3(0, 0, s) * Time.deltaTime * SPEED * 100);
+        else if (transform.position.y >= 60 && s > 0)
+            transform.Translate(new Vector3(0, 0, s) * Time.deltaTime * SPEED * 100);
+        else if (transform.position.y <= 15 && s < 0)
+            transform.Translate(new Vector3(0, 0, s) * Time.deltaTime * SPEED * 100);
+    }
+}
